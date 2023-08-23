@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-prose w-full items-left justify-between font-mono text-sm flex flex-col">
-          {list?.map((item) => {return (<div>{item}</div>);})}
+          {list?.map((item, idx) => {return (<div key={idx}>{item}</div>);})}
       </div>
     </main>
   )
