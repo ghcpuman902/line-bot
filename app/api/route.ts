@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import crypto from 'crypto'
 import { type NextRequest } from 'next/server'
 import { headers } from 'next/headers'
+import path from 'path';
 
 async function generateSignature(body: ArrayBuffer, channelSecret: string) {
   const keyData = new TextEncoder().encode(channelSecret);
@@ -44,14 +45,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const filePath = path.join(process.cwd(), 'app', 'api', 'events.json');
     // Read the existing data from the JSON file
-    const data = JSON.parse(await fs.readFile('public/events.json', 'utf-8'));
+    const data = JSON.parse(await fs.readFile(filePath, 'utf-8'));
 
     // Push the new data into the existing data
     data.push(parsedBody);
 
     // Write the updated data back to the file
-    await fs.writeFile('public/events.json', JSON.stringify(data, null, 2));
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 
     console.log('Webhook event saved.');
   } catch (error) {
