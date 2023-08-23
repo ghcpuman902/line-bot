@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export default function Page() {
-  const filePath = path.join(process.cwd(), 'app', 'edit', 'events.json');
+  const filePath = path.join('public', 'events.json');
   fs.appendFile(filePath, 'test' + '\n', ()=>{});
   const events = fs.readFileSync(filePath, 'utf8');
   return (

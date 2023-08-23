@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export default function Home() {
-  const filePath = path.join(process.cwd(), 'app', 'edit', 'events.json');
+  const filePath = path.join('public', 'events.json');
   const events = fs.readFileSync(filePath, 'utf8');
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
