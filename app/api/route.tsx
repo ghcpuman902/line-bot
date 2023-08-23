@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const filePath = path.join(process.cwd(), 'app', 'api', 'events.json');
+    const filePath = path.join(process.cwd(), 'app', 'edit', 'events.json');
     await fs.appendFile(filePath, JSON.stringify(parsedBody) + '\n');
 
     console.log('Webhook event saved.');
