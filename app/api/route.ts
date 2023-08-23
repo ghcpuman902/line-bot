@@ -45,13 +45,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Read the existing data from the JSON file
-    const data = JSON.parse(await fs.readFile('../../public/events.json', 'utf-8'));
+    const data = JSON.parse(await fs.readFile('public/events.json', 'utf-8'));
 
     // Push the new data into the existing data
     data.push(parsedBody);
 
     // Write the updated data back to the file
-    await fs.writeFile('events.json', JSON.stringify(data, null, 2));
+    await fs.writeFile('public/events.json', JSON.stringify(data, null, 2));
 
     console.log('Webhook event saved.');
   } catch (error) {
