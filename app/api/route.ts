@@ -46,14 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = path.join(process.cwd(), 'app', 'api', 'events.json');
-    // Read the existing data from the JSON file
-    const data = JSON.parse(await fs.readFile(filePath, 'utf-8'));
-
-    // Push the new data into the existing data
-    data.push(parsedBody);
-
-    // Write the updated data back to the file
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+    await fs.appendFile(filePath, JSON.stringify(parsedBody) + '\n');
 
     console.log('Webhook event saved.');
   } catch (error) {
