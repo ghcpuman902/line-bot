@@ -7,7 +7,7 @@ export default function Home() {
   useEffect(() => {
     const fetchExample = async () => {
       try {
-        const res = await fetch('/api/kv/ListAll', {
+        const res = await fetch('/api/kv/DeleteAll', {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -29,6 +29,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-prose w-full items-left justify-between font-mono text-sm flex flex-col">
+        <h1>Deleted:</h1>
           {list?.map((item) => {return (<div>{item}</div>);})}
       </div>
     </main>

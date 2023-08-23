@@ -1,9 +1,9 @@
 import fs from 'fs/promises'
 import crypto from 'crypto'
-import { type NextRequest } from 'next/server'
 import { headers } from 'next/headers'
-import path from 'path';
-
+import { kv } from '@vercel/kv';
+import { type NextRequest, NextResponse } from 'next/server'
+ 
 async function generateSignature(body: ArrayBuffer, channelSecret: string) {
   const keyData = new TextEncoder().encode(channelSecret);
   const key = await crypto.subtle.importKey(
@@ -45,8 +45,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const filePath = path.join('public', 'events.json');
-    await fs.appendFile(filePath, JSON.stringify(parsedBody) + '\n');
+    const newItem = JSON.stringify(parsedBody);
+    const now = new Date(); // Current date and time
+    const utcTimestamp = now.toISOString(); 
+    await kv.lpush( 'eventlist', `${utcTimestamp}: ${newItem}`);
 
     console.log('Webhook event saved.');
   } catch (error) {
