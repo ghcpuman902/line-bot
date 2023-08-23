@@ -17,6 +17,35 @@ async function generateSignature(body: ArrayBuffer, channelSecret: string) {
   return signatureBase64;
 }
 
+async function reply(replyToken: string, text: string) {
+  const url = 'https://api.line.me/v2/bot/message/reply';
+  const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN; // From your environment variables
+
+  // Set headers
+  const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${channelAccessToken}`,
+  };
+
+  // Set data to reply
+  const data = {
+      replyToken: replyToken,
+      messages: [
+          {
+              type: 'text',
+              text: text,
+          },
+      ],
+  };
+
+  // Use fetch to send the request
+  await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+  });
+}
+
 // Example of LINE bot server
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +72,13 @@ export async function POST(request: NextRequest) {
       return new Response('Unauthorized', {
         status: 401
       });
+    }
+
+    // Loop through events and reply if the event is a message and type is text
+    for (const event of parsedBody.events) {
+        if (event.type === 'message' && event.message.type === 'text') {
+            await reply(event.replyToken, event.message.text);
+        }
     }
 
     const newItem = JSON.stringify(parsedBody);
