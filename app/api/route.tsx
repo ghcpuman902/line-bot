@@ -74,25 +74,36 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Loop through events and reply if the event is a message and type is text
     for (const event of parsedBody.events) {
         if (event.type === 'message' && event.message.type === 'text') {
             await reply(event.replyToken, event.message.text);
         }
     }
 
+    // Save raw input as a log
     const newItem = JSON.stringify(parsedBody);
     const now = new Date(); // Current date and time
     const utcTimestamp = now.toISOString(); 
-    await kv.lpush( 'eventlist', `${utcTimestamp}: ${newItem}`);
+    await kv.lpush('eventlist', `${utcTimestamp}: ${newItem}`);
 
-    console.log('Webhook event saved.');
+    // Save user messages with just the time and content
+    for (const event of parsedBody.events) {
+      if (event.type === 'message' && event.message.type === 'text') {
+        const userId = event.source.userId;
+        const messageContent = event.message.text;
+        const messageTimestamp = new Date(event.timestamp).toISOString();
+        await kv.rpush(`user:${userId}`, `${messageTimestamp}: ${messageContent}`);
+      }
+    }
+
+    console.log('Webhook events saved.');
   } catch (error) {
     console.error('Error saving webhook event: ', error);
     return new Response('Internal Server Error', {
       status: 500
     });
   }
+}
 
   return new Response('OK', {
     status: 200

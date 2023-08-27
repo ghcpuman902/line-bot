@@ -8,7 +8,7 @@ export default function Home() {
   const fetchExample = async () => {
     try {
       const data = {'newItem': inputValue};
-      const res = await fetch('/api/kv/ListPush', {
+      const res = await fetch('/api/kv/LogPush', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

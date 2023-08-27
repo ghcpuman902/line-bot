@@ -1,0 +1,20 @@
+import { kv } from '@vercel/kv';
+import { NextResponse } from 'next/server'
+
+// The userId should be passed as a parameter
+export async function GET({ params }: { params: { userId: string } }) {
+  if (!params.userId) {
+    return NextResponse.json({ error: 'params.userId parameter is required' })
+  }
+  
+  // Fetch user messages from Redis
+  const messages = await kv.lrange(`user:${params.userId}`, 0, -1);
+
+  // Convert the string messages to an array of objects
+  const result = messages.map(message => {
+    const [timestamp, content] = message.split(': ');
+    return { timestamp, content };
+  });
+
+  return NextResponse.json({ result });
+}
