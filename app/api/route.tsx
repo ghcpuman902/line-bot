@@ -81,18 +81,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Save raw input as a log
-    const newItem = JSON.stringify(parsedBody);
+    const newWebhookEvents = JSON.stringify(parsedBody);
     const now = new Date(); // Current date and time
     const utcTimestamp = now.toISOString(); 
-    await kv.lpush('eventlist', `${utcTimestamp}: ${newItem}`);
+    await kv.lpush('eventlist', `'${utcTimestamp}': ${newWebhookEvents}`);
 
     // Save user messages with just the time and content
     for (const event of parsedBody.events) {
       if (event.type === 'message' && event.message.type === 'text') {
         const userId = event.source.userId;
         const messageContent = event.message.text;
+        const messageId = event.message.id;
         const messageTimestamp = new Date(event.timestamp).toISOString();
-        await kv.rpush(`user:${userId}`, `${messageTimestamp}: ${messageContent}`);
+        await kv.rpush(`user:${userId}`, `'${messageTimestamp}': ${messageId}: ${messageContent}`);
       }
     }
 

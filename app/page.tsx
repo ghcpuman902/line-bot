@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [list, setList] = useState<Array<{timestamp: string, content: string}> | null>([]);
+  const [list, setList] = useState<Array<{timestamp: string, id: string, content: string}> | null>([]);
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
@@ -14,13 +14,13 @@ export default function Home() {
           },
         })
         const getMessages = await res.json()
-        const result: Array<{timestamp: string, content: string}> | null = getMessages.result;
+        const result: Array<{timestamp: string, id: string, content: string}> | null = getMessages.result;
         console.log(result);
         setList(result);
 
       } catch (error) {
         console.error(error);
-        setList([{ timestamp: '', content: 'Could not fetch messages' }]);
+        setList([{ timestamp: '', id: '', content: 'Could not fetch messages' }]);
       }
     }
 
@@ -36,7 +36,7 @@ export default function Home() {
         <button onClick={() => setUserId(userId)}>Load Messages</button>
       </div>
       <div className="z-10 max-w-prose w-full items-left justify-between font-mono text-sm flex flex-col">
-          {list?.map((item, idx) => {return (<div key={idx}>{item.timestamp} - {item.content}</div>);})}
+          {list?.map((item, idx) => {return (<div key={item.id}>{item.timestamp} - {item.content}</div>);})}
       </div>
     </main>
   )

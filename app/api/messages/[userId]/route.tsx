@@ -12,8 +12,8 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
 
   // Convert the string messages to an array of objects
   const result = messages.map(message => {
-    const [timestamp, content] = message.split(': ');
-    return { timestamp, content };
+    const [timestamp, id, content] = message.split(': ');
+    return { timestamp, id, content };
   });
 
   return NextResponse.json({ result });
