@@ -8,6 +8,7 @@ export default function Home() {
     const fetchExample = async () => {
       try {
         const res = await fetch('/api/kv/DeleteAll', {
+          method: "POST",
           headers: {
             'Content-Type': 'application/json',
           },

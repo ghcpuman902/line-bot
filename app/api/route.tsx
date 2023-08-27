@@ -17,33 +17,39 @@ async function generateSignature(body: ArrayBuffer, channelSecret: string) {
   return signatureBase64;
 }
 
-async function reply(replyToken: string, text: string) {
+async function writeReply(text: string) {
+  return `你說： ${text}`;
+}
+
+async function sendReply(replyToken: string, userId: string inputText: string) {
   const url = 'https://api.line.me/v2/bot/message/reply';
-  const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN; // From your environment variables
+  const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN;
 
-  // Set headers
+  const replyText = await writeReply(inputText);
+
   const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${channelAccessToken}`,
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${channelAccessToken}`,
   };
 
-  // Set data to reply
   const data = {
-      replyToken: replyToken,
-      messages: [
-          {
-              type: 'text',
-              text: text,
-          },
-      ],
+    replyToken: replyToken,
+    messages: [
+      {
+        type: 'text',
+        text: replyText,
+      },
+    ],
   };
 
-  // Use fetch to send the request
   await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data),
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
   });
+
+  const replyTimestamp = new Date();
+  await kv.rpush(`user:${userId}`, `'${replyTimestamp}': assistant: ${replyToken}: ${replyText}`);
 }
 
 // Example of LINE bot server
@@ -74,11 +80,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    for (const event of parsedBody.events) {
-        if (event.type === 'message' && event.message.type === 'text') {
-            await reply(event.replyToken, event.message.text);
-        }
-    }
 
     // Save raw input as a log
     const newWebhookEvents = JSON.stringify(parsedBody);
@@ -86,16 +87,19 @@ export async function POST(request: NextRequest) {
     const utcTimestamp = now.toISOString(); 
     await kv.lpush('eventlist', `'${utcTimestamp}': ${newWebhookEvents}`);
 
-    // Save user messages with just the time and content
     for (const event of parsedBody.events) {
       if (event.type === 'message' && event.message.type === 'text') {
-        const userId = event.source.userId;
-        const messageContent = event.message.text;
-        const messageId = event.message.id;
-        const messageTimestamp = new Date(event.timestamp).toISOString();
-        await kv.rpush(`user:${userId}`, `'${messageTimestamp}': ${messageId}: ${messageContent}`);
+          // Save user message
+          const userId = event.source.userId;
+          const messageContent = event.message.text;
+          const messageId = event.message.id;
+          const messageTimestamp = new Date(event.timestamp);
+          await kv.rpush(`user:${userId}`, `'${messageTimestamp}': user: ${messageId}: ${messageContent}`);
+
+          // Send reply
+          await sendReply(event.replyToken, userId, messageContent);
       }
-    }
+  }
 
     console.log('Webhook events saved.');
   } catch (error) {
