@@ -103,7 +103,6 @@ export async function POST(request: NextRequest) {
       status: 500
     });
   }
-}
 
   return new Response('OK', {
     status: 200

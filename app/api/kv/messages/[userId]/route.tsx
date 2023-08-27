@@ -1,8 +1,8 @@
 import { kv } from '@vercel/kv';
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 // The userId should be passed as a parameter
-export async function GET({ params }: { params: { userId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   if (!params.userId) {
     return NextResponse.json({ error: 'params.userId parameter is required' })
   }
