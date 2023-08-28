@@ -21,7 +21,7 @@ async function writeReply(text: string) {
   return `你說： ${text}`;
 }
 
-async function sendReply(replyToken: string, userId: string inputText: string) {
+async function sendReply(replyToken: string, userId: string, inputText: string) {
   const url = 'https://api.line.me/v2/bot/message/reply';
   const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN;
 

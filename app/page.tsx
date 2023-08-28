@@ -1,14 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function Home() {
   const [list, setList] = useState<Array<{timestamp: string, role: string, id: string, content: string}> | null>([]);
   const [userId, setUserId] = useState('');
   const [userProfile, setUserProfile] = useState<{ displayName: string, pictureUrl: string, language: string } | null>(null);
 
-  useEffect(() => {
-    fetchProfileAndMessages();
-  }, [userId]);
 
   const fetchProfileAndMessages = async () => {
     try {
@@ -31,9 +29,14 @@ export default function Home() {
 
     } catch (error) {
       console.error(error);
-      setList([{ timestamp: '', id: '', content: 'Could not fetch messages' }]);
+      setList([{ timestamp: '', role: '', id: '', content: 'Could not fetch messages' }]);
     }
   }
+
+  useEffect(() => {
+    fetchProfileAndMessages();
+  }, [userId, fetchProfileAndMessages]);
+
 
   const handleClearMessages = async () => {
     try {
@@ -70,7 +73,7 @@ export default function Home() {
 
       {userProfile ? (
         <div className="my-5">
-          <img src={userProfile.pictureUrl} alt={userProfile.displayName} className="rounded-full h-24 w-24" />
+          <Image src={userProfile.pictureUrl} alt={userProfile.displayName} className="rounded-full h-24 w-24" />
           <h1 className="text-2xl font-bold mt-4">{userProfile.displayName}</h1>
           <h2 className="text-xl mt-2">{`Preferred Language: ${userProfile.language}`}</h2>
       <button className="border rounded mt-2 border-slate-600 px-2 w-full" onClick={handleClearMessages}>Clear Messages</button>
