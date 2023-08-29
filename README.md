@@ -1,34 +1,53 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Line Bot Webhook Endpoint 
 
-## Getting Started
+This project provides a webhook endpoint for receiving and processing event notifications from a [LINE Messaging API](https://developers.line.biz/en/services/messaging-api/). The endpoint receives messages from a LINE bot, processes the messages and replies accordingly. It features the use of a key-value database - [Vercel kv](https://github.com/vercel/kv) (a simple Redis-like interface using the Vercel SDK) to store incoming messages.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+1. **Receiving Events**: Upon successfully setting up of webhook URL and enabling the usage of webhooks on the LINE Developers console, the endpoint will start receiving webhook events from a LINE bot.
+
+2. **Event Processing**: Each webhook event represents a single user action in LINE app. The endpoint is able to handle text message event types and replies to them.
+
+3. **Storing Messages**: Incoming messages, including message ID, user ID, and message timestamp, are stored in Vercel kv.
+
+4. **Replying to Messages**: The endpoint is capable of replying to the message events. The reply is made through LINE Messaging API's reply message functionality.
+
+## Pages
+
+1. **Message View Page**: This page displays messages saved in the database by user ID. You can view all messages exchanged for each LINE user.
+
+2. **Event Log Page**: This page shows a log of all incoming webhook events. It's useful for debugging and understanding the behavior of your LINE bot.
+
+## Configuration
+
+To configure the LINE Bot, set these environment variables in your .env file:
+
+```dotenv
+CHANNEL_SECRET=your_channel_secret
+CHANNEL_ACCESS_TOKEN=your_channel_access_token
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository.
+2. Install dependencies using `npm install`.
+3. Run the server using `npm run dev`.
+4. Set your webhook URL on LINE Developers console to point to your local or production server.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Setup
 
-## Learn More
+In addition to the above, you will need to set up Vercel KV storage:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Link Your Project**: Run `vercel link` in your CLI to connect to your existing project. If you don’t already have a project to connect to, you can start with a KV template.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Pull Environment Variables**: Run `vercel env pull .env.development.local` to sync the environment variables to your local project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. **Install the SDK**: Run `npm install @vercel/kv` to add the Vercel KV SDK to your project. This package provides utilities for working with Vercel's key-value storage .
 
-## Deploy on Vercel
+## Usage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Send the text message to your LINE bot. The bot will reply with "You said: {message_content}".
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
